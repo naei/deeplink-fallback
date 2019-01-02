@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <script src="./lib/mobile-detect.min.js"></script>
+    </head>
+    <body>
+        <script>
+            (function() {
+                const url = new URLSearchParams(window.location.search);
+                const md = new MobileDetect(window.navigator.userAgent);
+                const app = {
+                    launchApp: function() {
+                        window.location.replace(decodeURI(`${url.get('deeplink')}`)); // open app deep link URI
+                        // fallback to app store page if the app did not open (not installed on the device)
+                        this.timer = setTimeout(this.openAppStore, 1000);
+                    },
+                    openAppStore: function() {
+                        if (md.is("AndroidOS")){
+                            window.location.replace(`https://play.google.com/store/apps/details?id=${url.get('playstore')}`);
+                        } else if (md.is("iOS")){
+                            window.location.replace(`https://itunes.apple.com/fr/app/${url.get('itunes')}`);
+                        }
+                        document.body.innerHTML = `
+                            <div><a href='https://play.google.com/store/apps/details?id=${url.get('playstore')}'><img src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' width='143px'/></a></div>
+                            <div><a href="https://itunes.apple.com/fr/app/${url.get('itunes')}" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2011-07-28&kind=iossoftware&bubble=apple_music) no-repeat;width:135px;height:40px;"></a></div>
+                        `;
+                    }
+                };
+                app.launchApp();
+            })();
+        </script>
+    </body>
+</html>
